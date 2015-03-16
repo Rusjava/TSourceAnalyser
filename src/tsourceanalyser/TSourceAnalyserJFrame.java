@@ -3,6 +3,16 @@
  */
 package tsourceanalyser;
 
+import ElectronBunchRead.ElectronBunchRead;
+import java.io.EOFException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Ruslan Feshchenko
@@ -15,9 +25,15 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
      */
     
     private int columnChoice=1;
+    private boolean working=false;
+    private double [] average;
+    private double [] averagesquare;
+    private int nel;
             
     public TSourceAnalyserJFrame() {
         initComponents();
+        this.average=new double [ElectronBunchRead.NCOL];
+        this.averagesquare=new double [ElectronBunchRead.NCOL];
     }
 
     /**
@@ -34,8 +50,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jLabelAverage = new javax.swing.JLabel();
+        jLabelDeviation = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,9 +107,9 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), "Outputs", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
-        jLabel1.setText("Average:");
+        jLabelAverage.setText("Average:");
 
-        jLabel2.setText("Mean squared deviation:");
+        jLabelDeviation.setText("Mean squared deviation:");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -101,9 +117,9 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabelAverage, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(41, 41, 41)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabelDeviation, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -111,8 +127,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabelAverage)
+                    .addComponent(jLabelDeviation))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -141,13 +157,46 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        //jProgressBar.setValue(0);
+        //jProgressBar.setStringPainted(true);
+        double [] electron=new double[ElectronBunchRead.NCOL];
+        try (ElectronBunchRead electronBunchRead=new ElectronBunchRead()) {
+            do {
+                electronBunchRead.read(electron);
+                for (int i=0; i<ElectronBunchRead.NCOL; i++) {
+                    average[i]+=electron[i];
+                    averagesquare[i]+=electron[i]*electron[i];
+                }
+                nel=electronBunchRead.getElectronCounter();
+                //jProgressBar.setValue((int)(100*(i+1)/nrays));
+            } while (true);
+        } catch (EOFException e) {
+            for (int i=0; i<ElectronBunchRead.NCOL; i++) {
+                    average[i]/=nel;
+                    averagesquare[i]/=nel;
+                }
+            jLabelAverage.setText("Average: "+
+                  (new DecimalFormat("#.######")).format(average[columnChoice])+"m");
+        } catch (InputMismatchException ex) {
+            
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "I/O error during file reading!", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+        } catch (InterruptedException ex) {
+            
+        } catch (InvocationTargetException ex) {
+            
+        } catch (NoSuchElementException ex) {
+            
+        } catch (ElectronBunchRead.FileNotOpenedException ex) {
+            Logger.getLogger(TSourceAnalyserJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
         String selectedItem=(String)jComboBox1.getSelectedItem();
         columnChoice=Integer.parseInt(selectedItem.substring(selectedItem.length()-1));
-        System.out.println(columnChoice);
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
@@ -188,8 +237,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabelAverage;
+    private javax.swing.JLabel jLabelDeviation;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

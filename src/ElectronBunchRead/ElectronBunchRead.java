@@ -30,7 +30,7 @@ public class ElectronBunchRead implements Closeable {
     /**
      * Number of columns
      */
-    public final int NCOL=6;
+    public static final int NCOL=6;
  
     private int electronCounter;
     
