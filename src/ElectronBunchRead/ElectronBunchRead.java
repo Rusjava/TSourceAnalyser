@@ -15,13 +15,14 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
+import java.io.Closeable;
 
 /**
  *
  * @author Ruslan Feshchenko
  * @version 0.1
  */
-public class ElectronBunchRead {
+public class ElectronBunchRead implements Closeable {
     
     private File file=null;
     private Object stream=null;
@@ -30,24 +31,57 @@ public class ElectronBunchRead {
      * Number of columns
      */
     public final int NCOL=6;
-    
-    private int nrays;
-    private int rayCounter;
+ 
+    private int electronCounter;
     
     /**
      * Constructor
-     * @param nrays
+     * @throws ElectronBunchRead.ElectronBunchRead.FileNotOpenedException
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
+     * @throws java.lang.reflect.InvocationTargetException
      */
-    public ElectronBunchRead (int nrays) throws FileNotOpenedException, 
-            FileNotFoundException, IOException {
-        this.nrays=nrays;
-        
+    public ElectronBunchRead () throws FileNotOpenedException, 
+            FileNotFoundException, IOException, InterruptedException, InvocationTargetException {
         if (openRead("Choose a text file with ray data")) {
             stream=new BufferedReader(new FileReader(file));
             String line=((BufferedReader)stream).readLine();
         }   else {
             throw new FileNotOpenedException();
         }   
+    }
+    
+    /**
+     * Closes I/O stream
+     * @throws IOException
+     */
+    @Override
+    public void close() throws IOException {
+        if (stream!=null) {
+            ((BufferedReader)stream).close();
+        }
+    }
+    
+    /**
+     * Reads binary data of one ray or of the file heading
+     * @param electronData double array of 18 numbers representing 18 columns of ray data
+     * @throws java.io.EOFException
+     * @throws java.io.IOException
+     */
+    public void read(double [] electronData) throws EOFException, IOException,
+            InputMismatchException, NoSuchElementException {
+        int nread=Math.min(electronData.length, NCOL);
+        electronCounter++;
+        Scanner header;
+        String line=((BufferedReader)stream).readLine();
+        if (line==null) {
+            throw new EOFException ();
+        }
+        header=new Scanner(line);
+        for (int i=0; i<nread; i++) { 
+            electronData[i]=header.nextDouble();     
+        }
     }
     
     private boolean openRead(String title) throws InterruptedException, InvocationTargetException {
@@ -67,6 +101,14 @@ public class ElectronBunchRead {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Returns the current value of electron counter
+     * @return
+     */
+    public int getElectronCounter () {
+        return electronCounter;
     }
     
     /**
