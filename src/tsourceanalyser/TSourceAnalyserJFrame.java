@@ -1,19 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Analyses the Shvedunov electron data
  */
 package tsourceanalyser;
 
 /**
  *
- * @author ruslik
+ * @author Ruslan Feshchenko
+ * @version 0.1
  */
 public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     /**
      * Creates new form TSourceAnalyserJFrame
      */
+    
+    private int columnChoice=1;
+            
     public TSourceAnalyserJFrame() {
         initComponents();
     }
@@ -60,8 +62,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jButton1)
-                .addGap(26, 26, 26)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -143,6 +145,9 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
+        String selectedItem=(String)jComboBox1.getSelectedItem();
+        columnChoice=Integer.parseInt(selectedItem.substring(selectedItem.length()-1));
+        System.out.println(columnChoice);
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
