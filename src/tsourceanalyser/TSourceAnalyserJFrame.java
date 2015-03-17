@@ -38,10 +38,9 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private double[] meanValue;
     private double[] meanDeviation;
     private int nel;
-    private String[] labelUnits = new String[]{"m", "rad", "m", "rad",
-        "m", "rad", "kev"};
+    private String[] labelUnits ;
     private int size=200;
-    private double minX=-0.01, maxX=0.01;
+    private double [] minX, maxX;
 
     /**
      * Creates new form TSourceAnalyserJFrame
@@ -50,6 +49,10 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         initComponents();
         this.meanValue = new double[ElectronBunchRead.NCOL];
         this.meanDeviation = new double[ElectronBunchRead.NCOL];
+        this.minX=new double[] {-10, -3, -10, -3, -10, -1500};
+        this.maxX=new double[] {10, 3, 10, 3, 10, 1500};
+        this.labelUnits = new String [] {"mm", "mrad", "mm", "mrad",
+        "mm", "kev"};
     }
 
     /**
