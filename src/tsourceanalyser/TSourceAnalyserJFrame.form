@@ -155,9 +155,9 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                  <Component id="jLabelAverage" min="-2" pref="101" max="-2" attributes="0"/>
+                  <Component id="jLabelMean" min="-2" pref="101" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-                  <Component id="jLabelDeviation" min="-2" pref="196" max="-2" attributes="0"/>
+                  <Component id="jLabelMeanMDeviation" min="-2" pref="196" max="-2" attributes="0"/>
                   <EmptySpace pref="22" max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -167,8 +167,8 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jLabelAverage" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabelDeviation" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabelMean" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabelMeanMDeviation" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -176,14 +176,14 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="jLabelAverage">
+        <Component class="javax.swing.JLabel" name="jLabelMean">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Average:"/>
+            <Property name="text" type="java.lang.String" value="Mean:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabelDeviation">
+        <Component class="javax.swing.JLabel" name="jLabelMeanMDeviation">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Mean squared deviation:"/>
+            <Property name="text" type="java.lang.String" value="Mean  deviation:"/>
           </Properties>
         </Component>
       </SubComponents>
