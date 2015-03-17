@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -136,10 +137,9 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addComponent(jLabelMean, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(41, 41, 41)
-                .addComponent(jLabelMeanMDeviation, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addComponent(jLabelMean, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabelMeanMDeviation, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -191,8 +191,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             } while (true);
         } catch (EOFException e) {
             for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
-                meanValue[i] /= nel;
-                meanDeviation[i] = meanDeviation[i] / nel - meanValue[i] * meanValue[i];
+                meanValue[i]/= nel;
+                meanDeviation[i] = Math.sqrt(meanDeviation[i]/nel-meanValue[i]*meanValue[i]);
             }
             updateLabels();
         } catch (InputMismatchException ex) {
@@ -216,7 +216,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
         String selectedItem = (String) jComboBox1.getSelectedItem();
-        columnChoice = Integer.parseInt(selectedItem.substring(selectedItem.length() - 1));
+        columnChoice = Integer.parseInt(selectedItem.substring(selectedItem.length() - 1))-1;
         updateLabels();
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
@@ -333,7 +333,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(TSourceAnalyserJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        Locale.setDefault(new Locale("en", "US"));
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
