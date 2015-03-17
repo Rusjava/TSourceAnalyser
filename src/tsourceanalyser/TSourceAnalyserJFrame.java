@@ -5,6 +5,7 @@ package tsourceanalyser;
 
 import ElectronBunchRead.ElectronBunchRead;
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.EOFException;
 import java.io.IOException;
@@ -34,14 +35,18 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
  */
 public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
-    private int columnChoice = 1;
+    private int columnChoice = 0;
     private boolean working = false;
     private double[] meanValue;
     private double[] meanDeviation;
     private int nel;
     private String[] labelUnits ;
+    private String [] keys;
     private int size=200;
     private double [] minX, maxX;
+    private ChartParam [] chartParam;
+    private JFreeChart chart;
+    private ChartPanel chartPanel;
 
     /**
      * Creates new form TSourceAnalyserJFrame
@@ -54,6 +59,12 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         this.maxX=new double[] {10, 3, 10, 3, 10, 1500};
         this.labelUnits = new String [] {"mm", "mrad", "mm", "mrad",
         "mm", "kev"};
+        this.keys=new String [] {"x", "thetax", "y", "thetay", "z", "energy"};
+        this.chartParam=new ChartParam[ElectronBunchRead.NCOL];
+        for (int i=0; i<ElectronBunchRead.NCOL; i++) {
+            chartParam[i]=
+                    new ChartParam(keys[i], (maxX[i]-minX[i])/(size-1), size, minX[i]);
+        }
     }
 
     /**
@@ -69,6 +80,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox();
         jPanel2 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabelMean = new javax.swing.JLabel();
         jLabelMeanMDeviation = new javax.swing.JLabel();
@@ -114,15 +126,30 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED), "Plot", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 180, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 227, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 47, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), "Outputs", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -183,6 +210,10 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             do {
                 electronBunchRead.read(electron);
                 for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
+                    int index=(int)Math.round((electron[i]-minX[i])/chartParam[i].step);
+                    if (index >= 0 && index < size) {
+                        chartParam[i].barData[index]+=1;
+                    }
                     meanValue[i] += electron[i];
                     meanDeviation[i] += electron[i] * electron[i];
                 }
@@ -195,6 +226,14 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 meanDeviation[i] = Math.sqrt(meanDeviation[i]/nel-meanValue[i]*meanValue[i]);
             }
             updateLabels();
+            chart=createLineChart(createLineDataset(chartParam[columnChoice]), 
+                    keys[columnChoice]+", "+labelUnits[columnChoice], "a.u.");
+            chartPanel=new ChartPanel(chart, jPanel4.getWidth(), jPanel4.getHeight(),
+            0, 0, 10*jPanel4.getWidth(), 10*jPanel4.getHeight(), false, true,
+                    true, true, true, true);
+            jPanel4.add(chartPanel);     
+            jPanel4.revalidate();
+            jPanel4.repaint(); 
         } catch (InputMismatchException ex) {
             JOptionPane.showMessageDialog(null, "Not a real number!", "Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -211,6 +250,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         } catch (ElectronBunchRead.FileNotOpenedException ex) {
             
         }
+        jPanel4.revalidate();
+        jPanel4.repaint(); 
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
@@ -269,7 +310,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 return new Double(getXValue(series, item));
             }
             public double getYValue(int series, int item) {
-                return data.lineData[item];
+                return data.barData[item];
              }
             public void addChangeListener(DatasetChangeListener listener) {
             // ignore - this dataset never changes
@@ -350,5 +391,6 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     // End of variables declaration//GEN-END:variables
 }
