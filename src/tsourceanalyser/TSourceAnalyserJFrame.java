@@ -47,6 +47,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private JFreeChart[] charts;
     private ChartPanel chartPanel=null;
     private double mult=1.6;
+    private final int N_LINES=3;
 
     /**
      * Creates new form TSourceAnalyserJFrame
@@ -303,17 +304,13 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         yAxis.setAutoRangeIncludesZero(false);
         /* Renderer */
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesLinesVisible(0, true);
-        renderer.setSeriesShapesVisible(0, false);
-        renderer.setSeriesStroke(0, new BasicStroke(2.0f));
+        for (int i=0; i<N_LINES; i++) {
+            renderer.setSeriesLinesVisible(i, true);
+            renderer.setSeriesShapesVisible(i, false);
+            renderer.setSeriesStroke(i, new BasicStroke(2.0f));
+        }
         renderer.setSeriesPaint(0, Color.BLUE);
-        renderer.setSeriesLinesVisible(1, true);
-        renderer.setSeriesShapesVisible(1, false);
-        renderer.setSeriesStroke(1, new BasicStroke(2.0f));
         renderer.setSeriesPaint(1, Color.GREEN);
-        renderer.setSeriesLinesVisible(2, true);
-        renderer.setSeriesShapesVisible(2, false);
-        renderer.setSeriesStroke(2, new BasicStroke(2.0f));
         renderer.setSeriesPaint(2, Color.MAGENTA);
         /* Plot creation */
         XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
@@ -333,7 +330,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private XYDataset createLineDataset(final ChartParam data) {
         return new XYDataset() {
             public int getSeriesCount() {
-                return 3;
+                return N_LINES;
             }
             public int getItemCount(int series) {
                 return data.size;
@@ -371,12 +368,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 // ignore
             }
             public Comparable getSeriesKey(int series) {
-                switch (series) {
-                    case 0: return data.key+"0";
-                    case 1: return data.key+"1";
-                    case 2: return data.key+"2";
-                }
-                return data.key;
+                return data.key+series;
             }
             public int indexOf(Comparable seriesKey) {
                 if (seriesKey.equals(data.key+"2")) {
