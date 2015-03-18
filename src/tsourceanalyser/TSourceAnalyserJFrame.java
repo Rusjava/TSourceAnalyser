@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import java.text.DecimalFormat;
 import java.util.Locale;
+import javax.swing.border.TitledBorder;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -52,8 +53,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
      */
     public TSourceAnalyserJFrame() {
         initComponents();
-        this.minX=new double[] {-0.04, -3, -0.04, -3, -10, -300};
-        this.maxX=new double[] {0.04, 3, 0.04, 3, 10, 300};
+        this.minX=new double[] {-0.04, -3, -0.04, -3, -8, -500};
+        this.maxX=new double[] {0.04, 3, 0.04, 3, 8, 500};
         this.labelUnits = new String [] {"mm", "mrad", "mm", "mrad",
         "mm", "kev"};
         this.keys=new String [] {"x", "thetax", "y", "thetay", "z", "energy"};
@@ -81,6 +82,12 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jLabelMean = new javax.swing.JLabel();
         jLabelMeanMDeviation = new javax.swing.JLabel();
+        jLabelElectronCount = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenuOptions = new javax.swing.JMenu();
+        jMenuItemRanges = new javax.swing.JMenuItem();
+        jMenuHelp = new javax.swing.JMenu();
+        jMenuItemAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -131,34 +138,70 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 227, Short.MAX_VALUE)
+            .addGap(0, 206, Short.MAX_VALUE)
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), "Outputs", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), "Results:", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
         jLabelMean.setText("Mean:");
 
         jLabelMeanMDeviation.setText("Mean  deviation:");
 
+        jLabelElectronCount.setText("Number of loaded electrons:");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabelMean, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabelMeanMDeviation, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabelElectronCount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabelMean, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabelMeanMDeviation, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(31, 31, 31)
+                .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelMean)
                     .addComponent(jLabelMeanMDeviation))
+                .addGap(18, 18, 18)
+                .addComponent(jLabelElectronCount)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jMenuOptions.setText("Options");
+
+        jMenuItemRanges.setText("X-axis ranges...");
+        jMenuItemRanges.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemRangesActionPerformed(evt);
+            }
+        });
+        jMenuOptions.add(jMenuItemRanges);
+
+        jMenuBar1.add(jMenuOptions);
+
+        jMenuHelp.setText("Help");
+        jMenuHelp.setToolTipText("");
+
+        jMenuItemAbout.setText("About");
+        jMenuItemAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemAboutActionPerformed(evt);
+            }
+        });
+        jMenuHelp.add(jMenuItemAbout);
+
+        jMenuBar1.add(jMenuHelp);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -185,12 +228,12 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        //jProgressBar.setValue(0);
-        //jProgressBar.setStringPainted(true);
         double[] electron = new double[ElectronBunchRead.NCOL];
         try (ElectronBunchRead electronBunchRead = new ElectronBunchRead()) {
             do {
                 electronBunchRead.read(electron);
+                nel = electronBunchRead.getElectronCounter();
+                jLabelElectronCount.setText("Number of loaded electrons: "+nel);
                 for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
                     int index=(int)Math.round((electron[i]-minX[i])/chartParam[i].step);
                     if (index >= 0 && index < size) {
@@ -198,9 +241,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                     }
                     chartParam[i].meanValue += electron[i];
                     chartParam[i].meanDeviation += electron[i] * electron[i];
-                }
-                nel = electronBunchRead.getElectronCounter();
-                //jProgressBar.setValue((int)(100*(i+1)/nrays));
+                } 
             } while (true);
         } catch (EOFException e) {
             for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
@@ -236,6 +277,14 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         updateChartPanel(); 
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void jMenuItemRangesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRangesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItemRangesActionPerformed
+
+    private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItemAboutActionPerformed
+
     /*
     * Generates line charts
     */
@@ -262,6 +311,10 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         renderer.setSeriesShapesVisible(1, false);
         renderer.setSeriesStroke(1, new BasicStroke(2.0f));
         renderer.setSeriesPaint(1, Color.GREEN);
+        renderer.setSeriesLinesVisible(2, true);
+        renderer.setSeriesShapesVisible(2, false);
+        renderer.setSeriesStroke(2, new BasicStroke(2.0f));
+        renderer.setSeriesPaint(2, Color.MAGENTA);
         /* Plot creation */
         XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
         plot.setBackgroundPaint(Color.white);
@@ -280,7 +333,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private XYDataset createLineDataset(final ChartParam data) {
         return new XYDataset() {
             public int getSeriesCount() {
-                return 2;
+                return 3;
             }
             public int getItemCount(int series) {
                 return data.size;
@@ -297,8 +350,10 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             public double getYValue(int series, int item) {
                 double dev=mult*data.meanDeviation;
                 switch (series) {
-                    case 1: return data.data[item];
-                    case 0: return nel*data.step/Math.sqrt(2*Math.PI)/dev*
+                    case 0: return data.data[item];
+                    case 1: return nel*data.step/Math.sqrt(2*Math.PI)/data.meanDeviation*
+                            Math.exp(-Math.pow((item*data.step+data.offset-data.meanValue)/data.meanDeviation, 2)/2);
+                    case 2: return nel*data.step/Math.sqrt(2*Math.PI)/dev*
                             Math.exp(-Math.pow((item*data.step+data.offset-data.meanValue)/dev, 2)/2);
                 }
                 return 0;
@@ -317,14 +372,17 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             }
             public Comparable getSeriesKey(int series) {
                 switch (series) {
-                    case 1: return data.key+"0";
-                    case 0: return data.key+"1";
+                    case 0: return data.key+"0";
+                    case 1: return data.key+"1";
+                    case 2: return data.key+"2";
                 }
                 return data.key;
             }
             public int indexOf(Comparable seriesKey) {
-                if (seriesKey.equals(data.key+"1")) {
-                    return 1;
+                if (seriesKey.equals(data.key+"2")) {
+                    return 2;
+                } else if (seriesKey.equals(data.key+"1")) {
+                     return 1;
                 }
                 return 0;
             }
@@ -344,6 +402,9 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         jLabelMeanMDeviation.setText("Mean deviation: "
                 + (new DecimalFormat("#.######")).format(chartParam[columnChoice].meanDeviation)
                 + " " + labelUnits[columnChoice]);
+        ((TitledBorder)(jPanel3.getBorder())).setTitle("Results: "+keys[columnChoice]);
+        jPanel3.revalidate();
+        jPanel3.repaint(); 
     }
     
     /*
@@ -354,13 +415,13 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         if (chartPanel!=null) {
             jPanel2.removeAll();
         }
-        chartPanel=new ChartPanel(charts[columnChoice], jPanel2.getWidth(), jPanel2.getHeight(),
+        chartPanel=new ChartPanel(charts[columnChoice], (int)(0.9*jPanel2.getWidth()), (int)(0.9*jPanel2.getHeight()),
             0, 0, 10*jPanel2.getWidth(), 10*jPanel2.getHeight(), false, true,
                     true, true, true, true);
         jPanel2.setLayout(new BorderLayout(10,10));
         jPanel2.add(chartPanel, BorderLayout.CENTER);     
         jPanel2.revalidate();
-        jPanel2.repaint(); 
+        jPanel2.repaint();   
     }
 
     /**
@@ -401,8 +462,14 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JLabel jLabelElectronCount;
     private javax.swing.JLabel jLabelMean;
     private javax.swing.JLabel jLabelMeanMDeviation;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenuHelp;
+    private javax.swing.JMenuItem jMenuItemAbout;
+    private javax.swing.JMenuItem jMenuItemRanges;
+    private javax.swing.JMenu jMenuOptions;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
