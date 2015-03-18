@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -32,7 +30,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 /**
  *
  * @author Ruslan Feshchenko
- * @version 0.1
+ * @version 1.0
  */
 public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
