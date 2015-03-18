@@ -15,10 +15,12 @@ import java.util.ArrayList;
 public class ChartParam {
     public final String key;
     public final double [] lineData;
-    public final double [] barData;
+    public final double [] data;
     public final double step;
     public final double offset;
     public final int size;
+    public double meanValue;
+    public double meanDeviation;
     
     /**
      * Constructor
@@ -34,6 +36,6 @@ public class ChartParam {
         this.step=step;
         this.offset=offset;
         lineData=new double [size];
-        barData=new double [size];
+        data=new double [size];
     }
 }

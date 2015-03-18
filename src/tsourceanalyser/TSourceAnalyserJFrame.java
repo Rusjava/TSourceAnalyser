@@ -37,26 +37,23 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     private int columnChoice = 0;
     private boolean working = false;
-    private double[] meanValue;
-    private double[] meanDeviation;
     private int nel;
     private String[] labelUnits ;
     private String [] keys;
     private int size=200;
     private double [] minX, maxX;
     private ChartParam [] chartParam;
-    private JFreeChart chart;
-    private ChartPanel chartPanel;
+    private JFreeChart[] charts;
+    private ChartPanel chartPanel=null;
+    private double mult=1.6;
 
     /**
      * Creates new form TSourceAnalyserJFrame
      */
     public TSourceAnalyserJFrame() {
         initComponents();
-        this.meanValue = new double[ElectronBunchRead.NCOL];
-        this.meanDeviation = new double[ElectronBunchRead.NCOL];
-        this.minX=new double[] {-10, -3, -10, -3, -10, -1500};
-        this.maxX=new double[] {10, 3, 10, 3, 10, 1500};
+        this.minX=new double[] {-0.04, -3, -0.04, -3, -10, -300};
+        this.maxX=new double[] {0.04, 3, 0.04, 3, 10, 300};
         this.labelUnits = new String [] {"mm", "mrad", "mm", "mrad",
         "mm", "kev"};
         this.keys=new String [] {"x", "thetax", "y", "thetay", "z", "energy"};
@@ -65,6 +62,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             chartParam[i]=
                     new ChartParam(keys[i], (maxX[i]-minX[i])/(size-1), size, minX[i]);
         }
+        this.charts=new JFreeChart [ElectronBunchRead.NCOL];
     }
 
     /**
@@ -80,7 +78,6 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox();
         jPanel2 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabelMean = new javax.swing.JLabel();
         jLabelMeanMDeviation = new javax.swing.JLabel();
@@ -126,30 +123,15 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED), "Plot", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 180, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addGap(0, 600, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 47, Short.MAX_VALUE))
+            .addGap(0, 227, Short.MAX_VALUE)
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), "Outputs", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -212,28 +194,22 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
                     int index=(int)Math.round((electron[i]-minX[i])/chartParam[i].step);
                     if (index >= 0 && index < size) {
-                        chartParam[i].barData[index]+=1;
+                        chartParam[i].data[index]+=1;
                     }
-                    meanValue[i] += electron[i];
-                    meanDeviation[i] += electron[i] * electron[i];
+                    chartParam[i].meanValue += electron[i];
+                    chartParam[i].meanDeviation += electron[i] * electron[i];
                 }
                 nel = electronBunchRead.getElectronCounter();
                 //jProgressBar.setValue((int)(100*(i+1)/nrays));
             } while (true);
         } catch (EOFException e) {
             for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
-                meanValue[i]/= nel;
-                meanDeviation[i] = Math.sqrt(meanDeviation[i]/nel-meanValue[i]*meanValue[i]);
+                chartParam[i].meanValue/= nel;
+                chartParam[i].meanDeviation = Math.sqrt(chartParam[i].meanDeviation/nel-chartParam[i].meanValue*chartParam[i].meanValue);
+                charts[i]=createLineChart(createLineDataset(chartParam[i]), keys[i]+", "+labelUnits[i], "a.u.");
             }
             updateLabels();
-            chart=createLineChart(createLineDataset(chartParam[columnChoice]), 
-                    keys[columnChoice]+", "+labelUnits[columnChoice], "a.u.");
-            chartPanel=new ChartPanel(chart, jPanel4.getWidth(), jPanel4.getHeight(),
-            0, 0, 10*jPanel4.getWidth(), 10*jPanel4.getHeight(), false, true,
-                    true, true, true, true);
-            jPanel4.add(chartPanel);     
-            jPanel4.revalidate();
-            jPanel4.repaint(); 
+            updateChartPanel();   
         } catch (InputMismatchException ex) {
             JOptionPane.showMessageDialog(null, "Not a real number!", "Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -250,8 +226,6 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         } catch (ElectronBunchRead.FileNotOpenedException ex) {
             
         }
-        jPanel4.revalidate();
-        jPanel4.repaint(); 
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
@@ -259,8 +233,12 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         String selectedItem = (String) jComboBox1.getSelectedItem();
         columnChoice = Integer.parseInt(selectedItem.substring(selectedItem.length() - 1))-1;
         updateLabels();
+        updateChartPanel(); 
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    /*
+    * Generates line charts
+    */
     private JFreeChart createLineChart(XYDataset dataset, String xlabel, String ylabel) {
         /* X axis */
         NumberAxis xAxis = new NumberAxis(xlabel);
@@ -279,7 +257,11 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         renderer.setSeriesLinesVisible(0, true);
         renderer.setSeriesShapesVisible(0, false);
         renderer.setSeriesStroke(0, new BasicStroke(2.0f));
-        renderer.setSeriesPaint(0, Color.GREEN);
+        renderer.setSeriesPaint(0, Color.BLUE);
+        renderer.setSeriesLinesVisible(1, true);
+        renderer.setSeriesShapesVisible(1, false);
+        renderer.setSeriesStroke(1, new BasicStroke(2.0f));
+        renderer.setSeriesPaint(1, Color.GREEN);
         /* Plot creation */
         XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
         plot.setBackgroundPaint(Color.white);
@@ -292,10 +274,13 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         return chart;
     } 
     
+    /*
+    * Generates XY datasets for charts
+    */
     private XYDataset createLineDataset(final ChartParam data) {
         return new XYDataset() {
             public int getSeriesCount() {
-                return 1;
+                return 2;
             }
             public int getItemCount(int series) {
                 return data.size;
@@ -310,7 +295,13 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 return new Double(getXValue(series, item));
             }
             public double getYValue(int series, int item) {
-                return data.barData[item];
+                double dev=mult*data.meanDeviation;
+                switch (series) {
+                    case 1: return data.data[item];
+                    case 0: return nel*data.step/Math.sqrt(2*Math.PI)/dev*
+                            Math.exp(-Math.pow((item*data.step+data.offset-data.meanValue)/dev, 2)/2);
+                }
+                return 0;
              }
             public void addChangeListener(DatasetChangeListener listener) {
             // ignore - this dataset never changes
@@ -325,9 +316,16 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 // ignore
             }
             public Comparable getSeriesKey(int series) {
+                switch (series) {
+                    case 1: return data.key+"0";
+                    case 0: return data.key+"1";
+                }
                 return data.key;
             }
             public int indexOf(Comparable seriesKey) {
+                if (seriesKey.equals(data.key+"1")) {
+                    return 1;
+                }
                 return 0;
             }
             public DomainOrder getDomainOrder() {
@@ -341,11 +339,28 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
      */
     private void updateLabels() {
         jLabelMean.setText("Mean: "
-                + (new DecimalFormat("#.######")).format(meanValue[columnChoice])
+                + (new DecimalFormat("#.######")).format(chartParam[columnChoice].meanValue)
                 + " " + labelUnits[columnChoice]);
         jLabelMeanMDeviation.setText("Mean deviation: "
-                + (new DecimalFormat("#.######")).format(meanDeviation[columnChoice])
+                + (new DecimalFormat("#.######")).format(chartParam[columnChoice].meanDeviation)
                 + " " + labelUnits[columnChoice]);
+    }
+    
+    /*
+    * Updates the main Chart Panel
+    */
+    
+    private void updateChartPanel () {
+        if (chartPanel!=null) {
+            jPanel2.removeAll();
+        }
+        chartPanel=new ChartPanel(charts[columnChoice], jPanel2.getWidth(), jPanel2.getHeight(),
+            0, 0, 10*jPanel2.getWidth(), 10*jPanel2.getHeight(), false, true,
+                    true, true, true, true);
+        jPanel2.setLayout(new BorderLayout(10,10));
+        jPanel2.add(chartPanel, BorderLayout.CENTER);     
+        jPanel2.revalidate();
+        jPanel2.repaint(); 
     }
 
     /**
@@ -391,6 +406,5 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     // End of variables declaration//GEN-END:variables
 }
