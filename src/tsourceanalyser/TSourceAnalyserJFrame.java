@@ -85,6 +85,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         jLabelElectronCount = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuOptions = new javax.swing.JMenu();
+        jMenuItemSize = new javax.swing.JMenuItem();
         jMenuItemRanges = new javax.swing.JMenuItem();
         jMenuHelp = new javax.swing.JMenu();
         jMenuItemAbout = new javax.swing.JMenuItem();
@@ -178,7 +179,15 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
         jMenuOptions.setText("Options");
 
-        jMenuItemRanges.setText("X-axis ranges...");
+        jMenuItemSize.setText("Graph size...");
+        jMenuItemSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemSizeActionPerformed(evt);
+            }
+        });
+        jMenuOptions.add(jMenuItemSize);
+
+        jMenuItemRanges.setText("Graph ranges...");
         jMenuItemRanges.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRangesActionPerformed(evt);
@@ -274,19 +283,19 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         updateChartPanel(); 
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
-    private void jMenuItemRangesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRangesActionPerformed
+    private void jMenuItemSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSizeActionPerformed
         // TODO add your handling code here:
         JTextField sizeBox = new JTextField();
         sizeBox.setText("200");
         Object[] message = {
-                        "EntergGraph size in points:", sizeBox
+                        "Enter graph size in points:", sizeBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Graph size",
                 JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            size=(int)Math.round(MyTextUtilities.TestValue(1, 10, sizeBox, "200"));
+            size=(int)Math.round(MyTextUtilities.TestValue(1, 1000, sizeBox, "200"));
         }
-    }//GEN-LAST:event_jMenuItemRangesActionPerformed
+    }//GEN-LAST:event_jMenuItemSizeActionPerformed
 
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
         // TODO add your handling code here:
@@ -294,6 +303,10 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 "<html>Electron bunch analyser. <br>Version: 1.0 <br>Date: March 2015. <br>Author: Ruslan Feshchenko</html>",
                 "About TSourceAnalyser", 1);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
+
+    private void jMenuItemRangesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRangesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItemRangesActionPerformed
 
     /*
     * Generates line charts
@@ -470,6 +483,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenuHelp;
     private javax.swing.JMenuItem jMenuItemAbout;
     private javax.swing.JMenuItem jMenuItemRanges;
+    private javax.swing.JMenuItem jMenuItemSize;
     private javax.swing.JMenu jMenuOptions;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

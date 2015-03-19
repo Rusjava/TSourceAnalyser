@@ -9,9 +9,17 @@
             <Property name="text" type="java.lang.String" value="Options"/>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemSize">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Graph size..."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemSizeActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItemRanges">
               <Properties>
-                <Property name="text" type="java.lang.String" value="X-axis ranges..."/>
+                <Property name="text" type="java.lang.String" value="Graph ranges..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemRangesActionPerformed"/>
