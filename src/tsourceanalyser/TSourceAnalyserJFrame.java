@@ -306,6 +306,20 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     private void jMenuItemRangesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRangesActionPerformed
         // TODO add your handling code here:
+        JTextField minValueBox = new JTextField();
+        minValueBox.setText("-0.04");
+        JTextField maxValueBox = new JTextField();
+        maxValueBox.setText("0.04");
+        Object[] message = {
+                        "Enter min value of x:", minValueBox,
+                        "Enter max value of x:", maxValueBox
+        };
+        int option = JOptionPane.showConfirmDialog(null, message, "Graph options",
+                JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            minX[columnChoice]=MyTextUtilities.TestValue(-0.2, 0, minValueBox, "-0.04");
+            maxX[columnChoice]=MyTextUtilities.TestValue(0, 0.2, maxValueBox, "0.04");
+        }
     }//GEN-LAST:event_jMenuItemRangesActionPerformed
 
     /*
