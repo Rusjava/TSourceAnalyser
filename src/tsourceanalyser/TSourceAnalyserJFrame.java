@@ -63,10 +63,6 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         "mm", "kev"};
         this.keys=new String [] {"x", "thetax", "y", "thetay", "z", "energy"};
         this.chartParam=new ChartParam[ElectronBunchRead.NCOL];
-        for (int i=0; i<ElectronBunchRead.NCOL; i++) {
-            chartParam[i]=
-                    new ChartParam(keys[i], (maxX[i]-minX[i])/(size-1), size, minX[i]);
-        }
         this.charts=new JFreeChart [ElectronBunchRead.NCOL];
     }
 
@@ -233,24 +229,21 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         double[] electron = new double[ElectronBunchRead.NCOL];
+        for (int i=0; i<ElectronBunchRead.NCOL; i++) {
+            chartParam[i]=
+                    new ChartParam(keys[i], (maxX[i]-minX[i])/(size-1), size, minX[i]);
+        }
         try (ElectronBunchRead electronBunchRead = new ElectronBunchRead()) {
             do {
                 electronBunchRead.read(electron);
                 nel = electronBunchRead.getElectronCounter();
                 jLabelElectronCount.setText("Number of loaded electrons: "+nel);
                 for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
-                    int index=(int)Math.round((electron[i]-minX[i])/chartParam[i].step);
-                    if (index >= 0 && index < size) {
-                        chartParam[i].data[index]+=1;
-                    }
-                    chartParam[i].meanValue += electron[i];
-                    chartParam[i].meanDeviation += electron[i] * electron[i];
+                    chartParam[i].add(electron[i]);
                 } 
             } while (true);
         } catch (EOFException e) {
             for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
-                chartParam[i].meanValue/= nel;
-                chartParam[i].meanDeviation = Math.sqrt(chartParam[i].meanDeviation/nel-chartParam[i].meanValue*chartParam[i].meanValue);
                 charts[i]=createLineChart(createLineDataset(chartParam[i]), keys[i]+", "+labelUnits[i], "a.u.");
             }
             updateLabels();
@@ -286,9 +279,9 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         JTextField sizeBox = new JTextField();
         sizeBox.setText("200");
         Object[] message = {
-                        "Graph size, points:", sizeBox
+                        "EntergGraph size in points:", sizeBox
         };
-        int option = JOptionPane.showConfirmDialog(null, message, "ShadowFileConverter parameters",
+        int option = JOptionPane.showConfirmDialog(null, message, "Graph size",
                 JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             size=(int)Math.round(MyTextUtilities.TestValue(1, 10, sizeBox, "200"));
@@ -361,13 +354,13 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 return new Double(getXValue(series, item));
             }
             public double getYValue(int series, int item) {
-                double dev=mult*data.meanDeviation;
+                double dev=mult*data.getMeanDeviation();
                 switch (series) {
                     case 0: return data.data[item];
-                    case 1: return nel*data.step/Math.sqrt(2*Math.PI)/data.meanDeviation*
-                            Math.exp(-Math.pow((item*data.step+data.offset-data.meanValue)/data.meanDeviation, 2)/2);
+                    case 1: return nel*data.step/Math.sqrt(2*Math.PI)/data.getMeanDeviation()*
+                            Math.exp(-Math.pow((item*data.step+data.offset-data.getMeanValue())/data.getMeanDeviation(), 2)/2);
                     case 2: return nel*data.step/Math.sqrt(2*Math.PI)/dev*
-                            Math.exp(-Math.pow((item*data.step+data.offset-data.meanValue)/dev, 2)/2);
+                            Math.exp(-Math.pow((item*data.step+data.offset-data.getMeanValue())/dev, 2)/2);
                 }
                 return 0;
              }
@@ -405,10 +398,10 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
      */
     private void updateLabels() {
         jLabelMean.setText("Mean: "
-                + (new DecimalFormat("#.######")).format(chartParam[columnChoice].meanValue)
+                + (new DecimalFormat("#.######")).format(chartParam[columnChoice].getMeanValue())
                 + " " + labelUnits[columnChoice]);
         jLabelMeanMDeviation.setText("Mean deviation: "
-                + (new DecimalFormat("#.######")).format(chartParam[columnChoice].meanDeviation)
+                + (new DecimalFormat("#.######")).format(chartParam[columnChoice].getMeanDeviation())
                 + " " + labelUnits[columnChoice]);
         ((TitledBorder)(jPanel3.getBorder())).setTitle("Results: "+keys[columnChoice]);
         jPanel3.revalidate();
