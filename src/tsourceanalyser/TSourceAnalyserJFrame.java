@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 import javax.swing.JOptionPane;
 import java.text.DecimalFormat;
 import java.util.Locale;
+import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import org.jfree.chart.ChartPanel;
@@ -26,6 +27,8 @@ import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.general.DatasetGroup;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+
+import shadowfileconverter.MyTextUtilities;
 
 /**
  *
@@ -46,12 +49,14 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private ChartPanel chartPanel=null;
     private double mult=1.6;
     private final int N_LINES=3;
+    private String [] paramDefaults;
 
     /**
      * Creates new form TSourceAnalyserJFrame
      */
     public TSourceAnalyserJFrame() {
         initComponents();
+        this.paramDefaults=new String [] {"0.04", "3", "0.04", "3", "8", "500"};
         this.minX=new double[] {-0.04, -3, -0.04, -3, -8, -500};
         this.maxX=new double[] {0.04, 3, 0.04, 3, 8, 500};
         this.labelUnits = new String [] {"mm", "mrad", "mm", "mrad",
@@ -278,10 +283,23 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     private void jMenuItemRangesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRangesActionPerformed
         // TODO add your handling code here:
+        JTextField sizeBox = new JTextField();
+        sizeBox.setText("200");
+        Object[] message = {
+                        "Graph size, points:", sizeBox
+        };
+        int option = JOptionPane.showConfirmDialog(null, message, "ShadowFileConverter parameters",
+                JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            size=(int)Math.round(MyTextUtilities.TestValue(1, 10, sizeBox, "200"));
+        }
     }//GEN-LAST:event_jMenuItemRangesActionPerformed
 
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
         // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null, 
+                "<html>Electron bunch analyser. <br>Version: 1.0 <br>Date: March 2015. <br>Author: Ruslan Feshchenko</html>",
+                "About TSourceAnalyser", 1);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
     /*
