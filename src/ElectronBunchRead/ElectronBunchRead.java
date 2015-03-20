@@ -72,12 +72,12 @@ public class ElectronBunchRead implements Closeable {
     public void read(double [] electronData) throws EOFException, IOException,
             InputMismatchException, NoSuchElementException {
         int nread=Math.min(electronData.length, NCOL);
-        electronCounter++;
         Scanner header;
         String line=((BufferedReader)stream).readLine();
         if (line==null) {
             throw new EOFException ();
         }
+        electronCounter++;
         header=new Scanner(line);
         for (int i=0; i<nread; i++) { 
             electronData[i]=header.nextDouble();     
