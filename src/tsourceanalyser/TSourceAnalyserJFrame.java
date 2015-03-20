@@ -18,6 +18,7 @@ import java.util.Locale;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.border.TitledBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -54,6 +55,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private double mult = 1.6;
     private final int N_LINES = 3;
     private String[] paramDefaults;
+    private JMenuItem saveDataItem;
 
     /**
      * Creates new form TSourceAnalyserJFrame
@@ -68,6 +70,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         this.keys = new String[]{"x-size", "thetax", "y-size", "thetay", "length", "energy"};
         this.chartParam = new ChartParam[ElectronBunchRead.NCOL];
         this.charts = new JFreeChart[ElectronBunchRead.NCOL];
+        this.saveDataItem=new JMenuItem("Save data...");
     }
 
     /**
@@ -474,12 +477,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             }
 
             public int indexOf(Comparable seriesKey) {
-                if (seriesKey.equals(data.key + "2")) {
-                    return 2;
-                } else if (seriesKey.equals(data.key + "1")) {
-                    return 1;
-                }
-                return 0;
+                String key=(String)seriesKey;
+                return Integer.parseInt(key.substring(key.length() - 1));
             }
 
             public DomainOrder getDomainOrder() {
@@ -515,6 +514,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         chartPanel = new ChartPanel(charts[columnChoice], (int) (0.9 * jPanel2.getWidth()), (int) (0.9 * jPanel2.getHeight()),
                 0, 0, 10 * jPanel2.getWidth(), 10 * jPanel2.getHeight(), false, true,
                 true, true, true, true);
+        //chartPanel.getComponentPopupMenu().add(saveDataItem);
         jPanel2.setLayout(new BorderLayout(10, 10));
         jPanel2.add(chartPanel, BorderLayout.CENTER);
         jPanel2.revalidate();
