@@ -32,7 +32,7 @@ public class ElectronBunchRead implements Closeable {
      */
     public static final int NCOL=6;
  
-    private int electronCounter;
+    private int electronCounter=0;
     
     /**
      * Constructor
@@ -46,7 +46,6 @@ public class ElectronBunchRead implements Closeable {
             FileNotFoundException, IOException, InterruptedException, InvocationTargetException {
         if (openRead("Choose a text file with ray data")) {
             stream=new BufferedReader(new FileReader(file));
-            String line=((BufferedReader)stream).readLine();
         }   else {
             throw new FileNotOpenedException();
         }   
@@ -72,13 +71,12 @@ public class ElectronBunchRead implements Closeable {
     public void read(double [] electronData) throws EOFException, IOException,
             InputMismatchException, NoSuchElementException {
         int nread=Math.min(electronData.length, NCOL);
-        Scanner header;
         String line=((BufferedReader)stream).readLine();
         if (line==null) {
             throw new EOFException ();
         }
         electronCounter++;
-        header=new Scanner(line);
+        Scanner header=new Scanner(line);
         for (int i=0; i<nread; i++) { 
             electronData[i]=header.nextDouble();     
         }
