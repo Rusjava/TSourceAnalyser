@@ -16,7 +16,11 @@ import javax.swing.JOptionPane;
 import java.text.DecimalFormat;
 import java.util.Locale;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -40,30 +44,30 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private int columnChoice = 0;
     private boolean working = false;
     private int nel;
-    private String[] labelUnits ;
-    private String [] keys;
-    private int size=200;
-    private double [] minX, maxX;
-    private ChartParam [] chartParam;
+    private String[] labelUnits;
+    private String[] keys;
+    private int size = 200;
+    private double[] minX, maxX;
+    private ChartParam[] chartParam;
     private JFreeChart[] charts;
-    private ChartPanel chartPanel=null;
-    private double mult=1.6;
-    private final int N_LINES=3;
-    private String [] paramDefaults;
+    private ChartPanel chartPanel = null;
+    private double mult = 1.6;
+    private final int N_LINES = 3;
+    private String[] paramDefaults;
 
     /**
      * Creates new form TSourceAnalyserJFrame
      */
     public TSourceAnalyserJFrame() {
         initComponents();
-        this.paramDefaults=new String [] {"0.04", "3", "0.04", "3", "8", "500"};
-        this.minX=new double[] {-0.04, -3, -0.04, -3, -8, -500};
-        this.maxX=new double[] {0.04, 3, 0.04, 3, 8, 500};
-        this.labelUnits = new String [] {"mm", "mrad", "mm", "mrad",
-        "mm", "kev"};
-        this.keys=new String [] {"x", "thetax", "y", "thetay", "z", "energy"};
-        this.chartParam=new ChartParam[ElectronBunchRead.NCOL];
-        this.charts=new JFreeChart [ElectronBunchRead.NCOL];
+        this.paramDefaults = new String[]{"0.04", "3", "0.04", "3", "8", "500"};
+        this.minX = new double[]{-0.04, -3, -0.04, -3, -8, -500};
+        this.maxX = new double[]{0.04, 3, 0.04, 3, 8, 500};
+        this.labelUnits = new String[]{"mm", "mrad", "mm", "mrad",
+            "mm", "kev"};
+        this.keys = new String[]{"x-size", "thetax", "y-size", "thetay", "length", "energy"};
+        this.chartParam = new ChartParam[ElectronBunchRead.NCOL];
+        this.charts = new JFreeChart[ElectronBunchRead.NCOL];
     }
 
     /**
@@ -238,25 +242,25 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         double[] electron = new double[ElectronBunchRead.NCOL];
-        for (int i=0; i<ElectronBunchRead.NCOL; i++) {
-            chartParam[i]=
-                    new ChartParam(keys[i], (maxX[i]-minX[i])/(size-1), size, minX[i]);
+        for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
+            chartParam[i]
+                    = new ChartParam(keys[i], (maxX[i] - minX[i]) / (size - 1), size, minX[i]);
         }
         try (ElectronBunchRead electronBunchRead = new ElectronBunchRead()) {
             do {
                 electronBunchRead.read(electron);
                 nel = electronBunchRead.getElectronCounter();
-                jLabelElectronCount.setText("Number of loaded electrons: "+nel);
+                jLabelElectronCount.setText("Number of loaded electrons: " + nel);
                 for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
                     chartParam[i].add(electron[i]);
-                } 
+                }
             } while (true);
         } catch (EOFException e) {
             for (int i = 0; i < ElectronBunchRead.NCOL; i++) {
-                charts[i]=createLineChart(createLineDataset(chartParam[i]), keys[i]+", "+labelUnits[i], "a.u.");
+                charts[i] = createLineChart(createLineDataset(chartParam[i]), keys[i] + ", " + labelUnits[i], "a.u.");
             }
             updateLabels();
-            updateChartPanel();   
+            updateChartPanel();
         } catch (InputMismatchException ex) {
             JOptionPane.showMessageDialog(null, "Not a real number!", "Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -271,16 +275,16 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "The data have less than six columns!", "Error",
                     JOptionPane.ERROR_MESSAGE);
         } catch (ElectronBunchRead.FileNotOpenedException ex) {
-            
+
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
         String selectedItem = (String) jComboBox1.getSelectedItem();
-        columnChoice = Integer.parseInt(selectedItem.substring(selectedItem.length() - 1))-1;
+        columnChoice = Integer.parseInt(selectedItem.substring(selectedItem.length() - 1)) - 1;
         updateLabels();
-        updateChartPanel(); 
+        updateChartPanel();
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jMenuItemSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSizeActionPerformed
@@ -288,43 +292,72 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         JTextField sizeBox = new JTextField();
         sizeBox.setText("200");
         Object[] message = {
-                        "Enter graph size in points:", sizeBox
+            "Enter graph size in points:", sizeBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Graph size",
                 JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            size=(int)Math.round(MyTextUtilities.TestValue(1, 1000, sizeBox, "200"));
+            size = (int) Math.round(MyTextUtilities.TestValue(1, 1000, sizeBox, "200"));
         }
     }//GEN-LAST:event_jMenuItemSizeActionPerformed
 
     private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(null, 
+        JOptionPane.showMessageDialog(null,
                 "<html>Electron bunch analyser. <br>Version: 1.0 <br>Date: March 2015. <br>Author: Ruslan Feshchenko</html>",
                 "About TSourceAnalyser", 1);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
     private void jMenuItemRangesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRangesActionPerformed
         // TODO add your handling code here:
-        JTextField minValueBox = new JTextField();
-        minValueBox.setText("-0.04");
-        JTextField maxValueBox = new JTextField();
-        maxValueBox.setText("0.04");
+        class Choice1 {
+
+            public int choice;
+
+            public Choice1(int choice) {
+                this.choice = choice;
+            }
+        }
+        Choice1 choice = new Choice1(columnChoice);
+        JComboBox jComboBoxOption = new JComboBox();
+        jComboBoxOption.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"Column 1", "Column 2", "Column 3", "Column 4",
+            "Column 5", "Column 6"}));
+        JTextField minValueBox = new JTextField("-" + paramDefaults[choice.choice]);
+        JLabel labelMin = new JLabel("Enter min value of "
+                + keys[choice.choice] + " in " + labelUnits[choice.choice]);
+        JLabel labelMax = new JLabel("Enter max value of "
+                + keys[choice.choice] + " in " + labelUnits[choice.choice]);
+        JTextField maxValueBox = new JTextField(paramDefaults[choice.choice]);
+        jComboBoxOption.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                String selectedItem = (String) jComboBoxOption.getSelectedItem();
+                choice.choice = Integer.parseInt(selectedItem.substring(selectedItem.length() - 1)) - 1;
+                minValueBox.setText("-" + paramDefaults[choice.choice]);
+                maxValueBox.setText(paramDefaults[choice.choice]);
+                labelMin.setText("Enter min value of "
+                        + keys[choice.choice] + " in " + labelUnits[choice.choice]);
+                labelMax.setText("Enter max value of "
+                        + keys[choice.choice] + " in " + labelUnits[choice.choice]);
+            }
+        });
         Object[] message = {
-                        "Enter min value of x:", minValueBox,
-                        "Enter max value of x:", maxValueBox
+            "Choose column", jComboBoxOption,
+            labelMin, minValueBox,
+            labelMax, maxValueBox
         };
         int option = JOptionPane.showConfirmDialog(null, message, "Graph options",
                 JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            minX[columnChoice]=MyTextUtilities.TestValue(-0.2, 0, minValueBox, "-0.04");
-            maxX[columnChoice]=MyTextUtilities.TestValue(0, 0.2, maxValueBox, "0.04");
+            minX[choice.choice] = MyTextUtilities.TestValue(-10 * Double.parseDouble(paramDefaults[choice.choice]),
+                    0, minValueBox, "-" + paramDefaults[choice.choice]);
+            maxX[choice.choice] = MyTextUtilities.TestValue(0,
+                    10 * Double.parseDouble(paramDefaults[choice.choice]), maxValueBox, paramDefaults[choice.choice]);
         }
     }//GEN-LAST:event_jMenuItemRangesActionPerformed
 
     /*
-    * Generates line charts
-    */
+     * Generates line charts
+     */
     private JFreeChart createLineChart(XYDataset dataset, String xlabel, String ylabel) {
         /* X axis */
         NumberAxis xAxis = new NumberAxis(xlabel);
@@ -340,7 +373,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         yAxis.setAutoRangeIncludesZero(false);
         /* Renderer */
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        for (int i=0; i<N_LINES; i++) {
+        for (int i = 0; i < N_LINES; i++) {
             renderer.setSeriesLinesVisible(i, true);
             renderer.setSeriesShapesVisible(i, false);
             renderer.setSeriesStroke(i, new BasicStroke(2.0f));
@@ -358,98 +391,114 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         chart.removeLegend();
         chart.setBackgroundPaint(Color.white);
         return chart;
-    } 
-    
+    }
+
     /*
-    * Generates XY datasets for charts
-    */
+     * Generates XY datasets for charts
+     */
     private XYDataset createLineDataset(final ChartParam data) {
         return new XYDataset() {
             public int getSeriesCount() {
                 return N_LINES;
             }
+
             public int getItemCount(int series) {
                 return data.size;
             }
+
             public Number getY(int series, int item) {
                 return new Double(getYValue(series, item));
             }
+
             public double getXValue(int series, int item) {
-                return item*data.step+data.offset;
+                return item * data.step + data.offset;
             }
+
             public Number getX(int series, int item) {
                 return new Double(getXValue(series, item));
             }
+
             public double getYValue(int series, int item) {
-                double dev=mult*data.getMeanDeviation();
+                double dev = mult * data.getMeanDeviation();
                 switch (series) {
-                    case 0: return data.data[item];
-                    case 1: return nel*data.step/Math.sqrt(2*Math.PI)/data.getMeanDeviation()*
-                            Math.exp(-Math.pow((item*data.step+data.offset-data.getMeanValue())/data.getMeanDeviation(), 2)/2);
-                    case 2: return nel*data.step/Math.sqrt(2*Math.PI)/dev*
-                            Math.exp(-Math.pow((item*data.step+data.offset-data.getMeanValue())/dev, 2)/2);
+                    case 0:
+                        return data.data[item];
+                    case 1:
+                        return nel * data.step / Math.sqrt(2 * Math.PI) / data.getMeanDeviation()
+                                * Math.exp(-Math.pow((item * data.step + data.offset - data.getMeanValue()) / data.getMeanDeviation(), 2) / 2);
+                    case 2:
+                        return nel * data.step / Math.sqrt(2 * Math.PI) / dev
+                                * Math.exp(-Math.pow((item * data.step + data.offset - data.getMeanValue()) / dev, 2) / 2);
                 }
                 return 0;
-             }
-            public void addChangeListener(DatasetChangeListener listener) {
-            // ignore - this dataset never changes
             }
+
+            public void addChangeListener(DatasetChangeListener listener) {
+                // ignore - this dataset never changes
+            }
+
             public void removeChangeListener(DatasetChangeListener listener) {
                 // ignore
             }
+
             public DatasetGroup getGroup() {
                 return null;
             }
+
             public void setGroup(DatasetGroup group) {
                 // ignore
             }
+
             public Comparable getSeriesKey(int series) {
-                return data.key+series;
+                return data.key + series;
             }
+
             public int indexOf(Comparable seriesKey) {
-                if (seriesKey.equals(data.key+"2")) {
+                if (seriesKey.equals(data.key + "2")) {
                     return 2;
-                } else if (seriesKey.equals(data.key+"1")) {
-                     return 1;
+                } else if (seriesKey.equals(data.key + "1")) {
+                    return 1;
                 }
                 return 0;
             }
+
             public DomainOrder getDomainOrder() {
                 return DomainOrder.ASCENDING;
-            }        
+            }
         };
     }
-        
+
     /*
      * updates labels with mean values
      */
     private void updateLabels() {
-        jLabelMean.setText("Mean: "
-                + (new DecimalFormat("#.######")).format(chartParam[columnChoice].getMeanValue())
-                + " " + labelUnits[columnChoice]);
-        jLabelMeanMDeviation.setText("Mean deviation: "
-                + (new DecimalFormat("#.######")).format(chartParam[columnChoice].getMeanDeviation())
-                + " " + labelUnits[columnChoice]);
-        ((TitledBorder)(jPanel3.getBorder())).setTitle("Results: "+keys[columnChoice]);
-        jPanel3.revalidate();
-        jPanel3.repaint(); 
+        if (chartParam[0] != null) {
+            jLabelMean.setText("Mean: "
+                    + (new DecimalFormat("#.######")).format(chartParam[columnChoice].getMeanValue())
+                    + " " + labelUnits[columnChoice]);
+            jLabelMeanMDeviation.setText("Mean deviation: "
+                    + (new DecimalFormat("#.######")).format(chartParam[columnChoice].getMeanDeviation())
+                    + " " + labelUnits[columnChoice]);
+            ((TitledBorder) (jPanel3.getBorder())).setTitle("Results: " + keys[columnChoice]);
+            jPanel3.revalidate();
+            jPanel3.repaint();
+        }
     }
-    
+
     /*
-    * Updates the main Chart Panel
-    */
-    
-    private void updateChartPanel () {
-        if (chartPanel!=null) {
+     * Updates the main Chart Panel
+     */
+    private void updateChartPanel() {
+        if (chartPanel != null) {
             jPanel2.removeAll();
         }
-        chartPanel=new ChartPanel(charts[columnChoice], (int)(0.9*jPanel2.getWidth()), (int)(0.9*jPanel2.getHeight()),
-            0, 0, 10*jPanel2.getWidth(), 10*jPanel2.getHeight(), false, true,
-                    true, true, true, true);
-        jPanel2.setLayout(new BorderLayout(10,10));
-        jPanel2.add(chartPanel, BorderLayout.CENTER);     
+        chartPanel = new ChartPanel(charts[columnChoice], (int) (0.9 * jPanel2.getWidth()), (int) (0.9 * jPanel2.getHeight()),
+                0, 0, 10 * jPanel2.getWidth(), 10 * jPanel2.getHeight(), false, true,
+                true, true, true, true);
+        jPanel2.setLayout(new BorderLayout(10, 10));
+        jPanel2.add(chartPanel, BorderLayout.CENTER);
         jPanel2.revalidate();
-        jPanel2.repaint();   
+        jPanel2.repaint();
     }
 
     /**
