@@ -23,6 +23,11 @@ import javax.swing.JMenuItem;
 import javax.swing.border.TitledBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Formatter;
+import javax.swing.JFileChooser;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -71,9 +76,9 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         this.keys = new String[]{"x-size", "thetax", "y-size", "thetay", "length", "energy"};
         this.chartParam = new ChartParam[ElectronBunchRead.NCOL];
         this.charts = new JFreeChart[ElectronBunchRead.NCOL];
-        this.saveDataItem=new JMenuItem("Save data...");
-        saveDataItem.setMnemonic(KeyEvent.VK_S);
-        saveDataItem.addActionListener((evt)->jSaveDataItemactionPerformed(evt));
+        this.saveDataItem = new JMenuItem("Save data...");
+        this.saveDataItem.setMnemonic(KeyEvent.VK_S);
+        this.saveDataItem.addActionListener((evt) -> jSaveDataItemactionPerformed(evt));
     }
 
     /**
@@ -383,11 +388,39 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     /*
      * Acttion event handler for saveData item of the popup menu of the chart panel
+     * It saves graph data into a text file
      */
     private void jSaveDataItemactionPerformed(java.awt.event.ActionEvent evt) {
-        System.out.println("SaveData");
+        XYDataset dataset = chartPanel.getChart().getXYPlot().getDataset();
+        JFileChooser fo = new JFileChooser();
+        fo.setDialogTitle("Chhoise file to save graphs");
+        if (fo.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File file = fo.getSelectedFile();
+            if (file.exists()) {
+                int n = JOptionPane.showConfirmDialog(null, "The file already exists. Overwrite?", "Warning",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (n == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
+            Formatter fm;
+            try (PrintWriter pw = new PrintWriter(new FileWriter(file, false))) {
+                for (int i = 0; i < dataset.getItemCount(0); i++) {
+                    fm = new Formatter();
+                    fm.format("%f", dataset.getXValue(0, i));
+                    for (int k = 0; k < N_LINES; k++) {
+                        fm.format(" %f", dataset.getYValue(k, i));
+                    }
+                    pw.println(fm);
+                }
+                pw.close();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error while writing to the file", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
-    
+
     /*
      * Generates line charts
      */
@@ -455,7 +488,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
                 double dev = mult * data.getMeanDeviation();
                 switch (series) {
                     case 0:
-                        return data.data[item];
+                        return data.getData()[item];
                     case 1:
                         return nel * data.step / Math.sqrt(2 * Math.PI) / data.getMeanDeviation()
                                 * Math.exp(-Math.pow((item * data.step + data.offset - data.getMeanValue()) / data.getMeanDeviation(), 2) / 2);
@@ -487,7 +520,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
             }
 
             public int indexOf(Comparable seriesKey) {
-                String key=(String)seriesKey;
+                String key = (String) seriesKey;
                 return Integer.parseInt(key.substring(key.length() - 1));
             }
 
