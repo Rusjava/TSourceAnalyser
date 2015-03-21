@@ -514,7 +514,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         chartPanel = new ChartPanel(charts[columnChoice], (int) (0.9 * jPanel2.getWidth()), (int) (0.9 * jPanel2.getHeight()),
                 0, 0, 10 * jPanel2.getWidth(), 10 * jPanel2.getHeight(), false, true,
                 true, true, true, true);
-        //chartPanel.getComponentPopupMenu().add(saveDataItem);
+        chartPanel.getPopupMenu().add(saveDataItem);
         jPanel2.setLayout(new BorderLayout(10, 10));
         jPanel2.add(chartPanel, BorderLayout.CENTER);
         jPanel2.revalidate();
