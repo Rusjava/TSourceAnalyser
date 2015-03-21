@@ -12,10 +12,21 @@ package tsourceanalyser;
  */
 public class ChartParam {
 
+    /**
+     * Key string
+     */
     public final String key;
-    public final double[] data;
+    private final double[] data;
     public final double step;
+
+    /**
+     * Graph offset
+     */
     public final double offset;
+
+    /**
+     * Graph size
+     */
     public final int size;
     private double meanValue;
     private double meanDeviation;
@@ -67,5 +78,13 @@ public class ChartParam {
      */
     public double getMeanDeviation() {
         return Math.sqrt((meanDeviation - meanValue * meanValue /nel) / nel);
+    }
+    
+    /**
+     * Returning data array
+     * @return
+     */
+    public double [] getData () {
+        return data;
     }
 }

@@ -341,36 +341,39 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
 
     private void jMenuItemRangesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemRangesActionPerformed
         // TODO add your handling code here:
-        class Choice1 {
-
-            public int choice;
-
-            public Choice1(int choice) {
-                this.choice = choice;
-            }
-        }
-        Choice1 choice = new Choice1(columnChoice);
+        
         JComboBox jComboBoxOption = new JComboBox();
         jComboBoxOption.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"Column 1", "Column 2", "Column 3", "Column 4",
             "Column 5", "Column 6"}));
-        JTextField minValueBox = new JTextField("-" + paramDefaults[choice.choice]);
+        jComboBoxOption.setSelectedIndex(columnChoice);
+        JTextField minValueBox = new JTextField("-" + paramDefaults[columnChoice]);
         JLabel labelMin = new JLabel("Enter min value of "
-                + keys[choice.choice] + " in " + labelUnits[choice.choice]);
+                + keys[columnChoice] + " in " + labelUnits[columnChoice]);
         JLabel labelMax = new JLabel("Enter max value of "
-                + keys[choice.choice] + " in " + labelUnits[choice.choice]);
-        JTextField maxValueBox = new JTextField(paramDefaults[choice.choice]);
-        jComboBoxOption.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                String selectedItem = (String) jComboBoxOption.getSelectedItem();
-                choice.choice = Integer.parseInt(selectedItem.substring(selectedItem.length() - 1)) - 1;
-                minValueBox.setText("-" + paramDefaults[choice.choice]);
-                maxValueBox.setText(paramDefaults[choice.choice]);
-                labelMin.setText("Enter min value of "
-                        + keys[choice.choice] + " in " + labelUnits[choice.choice]);
-                labelMax.setText("Enter max value of "
-                        + keys[choice.choice] + " in " + labelUnits[choice.choice]);
+                + keys[columnChoice] + " in " + labelUnits[columnChoice]);
+        JTextField maxValueBox = new JTextField(paramDefaults[columnChoice]);
+        
+        class Choice implements ActionListener {
+            public int choice;
+            public Choice(int choice) {
+                this.choice = choice;
             }
-        });
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedItem = (String) jComboBoxOption.getSelectedItem();
+                choice = Integer.parseInt(selectedItem.substring(selectedItem.length() - 1)) - 1;
+                minValueBox.setText("-" + paramDefaults[choice]);
+                maxValueBox.setText(paramDefaults[choice]);
+                labelMin.setText("Enter min value of "
+                        + keys[choice] + " in " + labelUnits[choice]);
+                labelMax.setText("Enter max value of "
+                        + keys[choice] + " in " + labelUnits[choice]);
+            }
+        }
+        
+        Choice choice = new Choice(columnChoice);
+        jComboBoxOption.addActionListener(choice);
         Object[] message = {
             "Choose column", jComboBoxOption,
             labelMin, minValueBox,
@@ -393,7 +396,7 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
     private void jSaveDataItemactionPerformed(java.awt.event.ActionEvent evt) {
         XYDataset dataset = chartPanel.getChart().getXYPlot().getDataset();
         JFileChooser fo = new JFileChooser();
-        fo.setDialogTitle("Chhoise file to save graphs");
+        fo.setDialogTitle("Choose file to save graphs");
         if (fo.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             File file = fo.getSelectedFile();
             if (file.exists()) {
