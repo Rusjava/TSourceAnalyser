@@ -7,6 +7,7 @@ import ElectronBunchRead.ElectronBunchRead;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -71,6 +72,8 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         this.chartParam = new ChartParam[ElectronBunchRead.NCOL];
         this.charts = new JFreeChart[ElectronBunchRead.NCOL];
         this.saveDataItem=new JMenuItem("Save data...");
+        saveDataItem.setMnemonic(KeyEvent.VK_S);
+        saveDataItem.addActionListener((evt)->jSaveDataItemactionPerformed(evt));
     }
 
     /**
@@ -378,6 +381,13 @@ public class TSourceAnalyserJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItemRangesActionPerformed
 
+    /*
+     * Acttion event handler for saveData item of the popup menu of the chart panel
+     */
+    private void jSaveDataItemactionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println("SaveData");
+    }
+    
     /*
      * Generates line charts
      */
