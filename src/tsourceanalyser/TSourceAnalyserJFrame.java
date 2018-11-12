@@ -39,7 +39,7 @@ import org.jfree.data.general.DatasetGroup;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
-import shadowfileconverter.MyTextUtilities;
+import TextUtilities.MyTextUtilities;
 
 /**
  *
